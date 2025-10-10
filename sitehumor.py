@@ -202,4 +202,14 @@ else:
 st.markdown("---")
 st.markdown("Feito com ❤️ — quer que eu adicione integração com a API do Spotify ou um horóscopo em tempo real (aztro)?")
 
-# ---------- END ----------
+humor = st.selectbox("Como você está hoje?", ["😊 Feliz", "😔 Triste", "😤 Estressada", "😌 Calma"])
+
+if humor == "😊 Feliz":
+    st.image("https://i.imgur.com/7aZzZQz.png", caption="Alegria no ar!")
+elif humor == "😔 Triste":
+    st.image("https://i.imgur.com/x0Vt4Hk.png", caption="Dias nublados também passam 💙")
+elif humor == "😤 Estressada":
+    st.image("https://i.imgur.com/W2dKh3g.png", caption="Respira fundo 💨")
+else:
+    st.image("https://i.imgur.com/6Zb7WcE.png", caption="Paz interior 🌿")
+
