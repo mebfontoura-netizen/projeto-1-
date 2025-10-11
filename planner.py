@@ -9,8 +9,8 @@ st.set_page_config(page_title="Meu Planner Diário", page_icon="📝", layout="c
 # ---------- TÍTULO E IMAGEM DECORATIVA ----------
 st.title("🩷 Meu Planner Diário 🩷")
 st.image(
-    "https://i.imgur.com/LLfR5Mt.png",
-    caption="Organize seu dia com estilo!",
+    "https://i.imgur.com/jv3x8mV.png",  # imagem válida e bonita
+    caption="Organize seu dia com estilo e tranquilidade 🌸",
     use_container_width=True,
 )
 
@@ -118,5 +118,5 @@ elif view == "Humor":
 
 # ---------- RODAPÉ ----------
 st.sidebar.markdown("---")
-st.sidebar.info("Desenvolvido com 💖 em Streamlit por Duda Bustamante")
+st.sidebar.info("Desenvolvido com 💖 em Streamlit por Maria Eduarda Fontoura")
 
