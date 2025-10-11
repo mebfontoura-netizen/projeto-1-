@@ -73,7 +73,7 @@ elif view == "Painel de Metas":
                     "valor_total": valor_total, 
                     "data_limite": data_limite.strftime("%Y-%m-%d")
                 }])
-                global df_goals
+
                 df_goals = pd.concat([df_goals, nova_linha], ignore_index=True)
                 salvar_metas(df_goals)
                 st.success(f"Meta '{nova_meta}' adicionada com sucesso!")
