@@ -23,7 +23,7 @@ df = carregar_dados()
 # ---------- CABEÇALHO ----------
 st.title("💗 Meu Planner Diário 💗")
 st.image(
-    "https://br.pinterest.com/pin/376121006400501998/",  # banner rosa decorativo
+    "https://ca.pinterest.com/pin/225250418855358335/",  # banner rosa decorativo
     caption="Organize seu dia com estilo e leveza 🌸",
     use_container_width=True
 )
