@@ -7,6 +7,7 @@ import os
 st.set_page_config(page_title="Meu Planner Diário", page_icon="💖", layout="centered")
 
 DATA_FILE = "planner_data.csv"
+GOALS_FILE = "goals_data.csv" # Novo arquivo para rastreamento de metas
 
 # ---------- FUNÇÕES DE DADOS ----------
 def carregar_dados():
@@ -18,7 +19,18 @@ def carregar_dados():
 def salvar_dados(df):
     df.to_csv(DATA_FILE, index=False)
 
+def carregar_metas():
+    if os.path.exists(GOALS_FILE):
+        return pd.read_csv(GOALS_FILE)
+    else:
+        # Colunas: meta, valor_atual, valor_total, data_limite
+        return pd.DataFrame(columns=["meta", "valor_atual", "valor_total", "data_limite"])
+
+def salvar_metas(df_goals):
+    df_goals.to_csv(GOALS_FILE, index=False)
+
 df = carregar_dados()
+df_goals = carregar_metas()
 
 # ---------- CABEÇALHO ----------
 st.title("💗 Meu Planner Diário 💗")
@@ -31,7 +43,8 @@ st.image(
 st.markdown("**Por Maria Eduarda Fontoura ✨**")
 
 # ---------- SIDEBAR ----------
-view = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Checklist", "Lista de Compras", "Tarefas", "Humor"])
+# Opção "Rastreador de Hábitos" substituída por "Painel de Metas"
+view = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Painel de Metas", "Lista de Compras", "Tarefas", "Humor"])
 
 # ---------- VISÃO GERAL ----------
 if view == "Visão Geral":
@@ -42,30 +55,76 @@ if view == "Visão Geral":
     humor = st.selectbox("Como está seu humor hoje?", ["😀 Feliz", "😐 Neutra", "😢 Triste", "😡 Irritada", "😴 Cansada"])
     st.write(f"💭 Seu humor de hoje: {humor}")
 
-# ---------- CHECKLIST ----------
-elif view == "Checklist":
-    st.header("✅ Checklist Diário")
-    novo_item = st.text_input("Adicionar novo item:")
-    if st.button("Adicionar"):
-        if novo_item:
-            df = df._append({"tipo": "checklist", "item": novo_item, "feito": False}, ignore_index=True)
-            salvar_dados(df)
-
-    checklist = df[df["tipo"] == "checklist"]
-    for i, row in checklist.iterrows():
-        col1, col2, col3 = st.columns([3, 1, 1])
-        with col1:
-            # Acessar por índice para evitar erro de SettingWithCopyWarning
-            done = st.checkbox(row["item"], value=row["feito"], key=f"check_{i}")
-        with col2:
-            if st.button("🗑️", key=f"del_check_{i}"):
-                df = df.drop(i)
-                salvar_dados(df)
+# ---------- PAINEL DE METAS (Substitui Rastreador de Hábitos) ----------
+elif view == "Painel de Metas":
+    st.header("🏆 Painel de Metas")
+    
+    with st.expander("Adicionar Nova Meta"):
+        nova_meta = st.text_input("Nome da Meta (ex: Economizar R$ 500):")
+        valor_total = st.number_input("Valor Total da Meta:", min_value=1.0, value=100.0, step=1.0)
+        valor_atual = st.number_input("Valor Atual (Progresso Inicial):", min_value=0.0, value=0.0, step=1.0)
+        data_limite = st.date_input("Data Limite (Opcional):", min_value=datetime.date.today(), value=datetime.date.today() + datetime.timedelta(days=30))
+        
+        if st.button("Salvar Meta"):
+            if nova_meta and valor_total > 0 and valor_atual <= valor_total:
+                nova_linha = pd.DataFrame([{
+                    "meta": nova_meta, 
+                    "valor_atual": valor_atual, 
+                    "valor_total": valor_total, 
+                    "data_limite": data_limite.strftime("%Y-%m-%d")
+                }])
+                global df_goals
+                df_goals = pd.concat([df_goals, nova_linha], ignore_index=True)
+                salvar_metas(df_goals)
+                st.success(f"Meta '{nova_meta}' adicionada com sucesso!")
                 st.experimental_rerun()
-        # Atualizar o DataFrame principal 'df'
-        if done != row["feito"]:
-            df.loc[i, "feito"] = done
-    salvar_dados(df)
+            else:
+                st.error("Por favor, preencha todos os campos corretamente.")
+
+    st.markdown("---")
+    st.subheader("Suas Metas em Progresso")
+    
+    if df_goals.empty:
+        st.info("Nenhuma meta adicionada ainda. Use o campo acima para começar!")
+    
+    for i, row in df_goals.iterrows():
+        meta = row["meta"]
+        valor_atual = row["valor_atual"]
+        valor_total = row["valor_total"]
+        data_limite = row["data_limite"]
+        
+        progresso = valor_atual / valor_total
+        progresso_porcentagem = f"{progresso * 100:.1f}%"
+        
+        st.markdown(f"**{meta}** (Meta: {valor_total:.2f})")
+        
+        col1, col2, col3 = st.columns([3, 1, 1])
+        
+        with col1:
+            st.progress(progresso, text=f"Progresso: {valor_atual:.2f} / {valor_total:.2f}")
+        
+        with col2:
+            # Botão para atualizar o progresso
+            novo_progresso = st.number_input("Atualizar:", min_value=0.0, max_value=valor_total, value=valor_atual, step=1.0, key=f"update_{i}")
+            if novo_progresso != valor_atual:
+                df_goals.loc[i, "valor_atual"] = novo_progresso
+                salvar_metas(df_goals)
+                st.experimental_rerun()
+        
+        with col3:
+            # Botão para remover a meta
+            if st.button("🗑️", key=f"del_goal_{i}"):
+                df_goals = df_goals.drop(i)
+                salvar_metas(df_goals)
+                st.experimental_rerun()
+        
+        if progresso >= 1.0:
+            st.balloons()
+            st.success(f"🎉 Meta '{meta}' concluída! Parabéns!")
+        elif data_limite and datetime.datetime.strptime(data_limite, "%Y-%m-%d").date() < datetime.date.today():
+            st.warning(f"⚠️ Data limite ({data_limite}) para a meta '{meta}' expirou.")
+        else:
+            st.caption(f"Data Limite: {data_limite}")
 
 # ---------- LISTA DE COMPRAS ----------
 elif view == "Lista de Compras":
