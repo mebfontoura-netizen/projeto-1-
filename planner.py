@@ -23,7 +23,7 @@ df = carregar_dados()
 # ---------- CABEÇALHO ----------
 st.title("💗 Meu Planner Diário 💗")
 st.image(
-    "https://files.manuscdn.com/user_upload_by_module/session_file/310419663032198608/PtOhpzpQveAegIWA.webp",  # Imagem de banner rosa decorativo (substituída por uma URL de imagem válida)
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310419663032198608/GkDzDVfHFzjxfuPg.jpg",  # Imagem de banner rosa decorativo (substituída por uma URL de imagem válida)
     caption="Organize seu dia com estilo e leveza 🌸",
     use_container_width=True
 )
