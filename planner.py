@@ -23,7 +23,7 @@ df = carregar_dados()
 # ---------- CABEÇALHO ----------
 st.title("💗 Meu Planner Diário 💗")
 st.image(
-    "https://ca.pinterest.com/pin/225250418855358335/",  # banner rosa decorativo
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310419663032198608/PtOhpzpQveAegIWA.webp",  # Imagem de banner rosa decorativo (substituída por uma URL de imagem válida)
     caption="Organize seu dia com estilo e leveza 🌸",
     use_container_width=True
 )
@@ -55,13 +55,16 @@ elif view == "Checklist":
     for i, row in checklist.iterrows():
         col1, col2, col3 = st.columns([3, 1, 1])
         with col1:
+            # Acessar por índice para evitar erro de SettingWithCopyWarning
             done = st.checkbox(row["item"], value=row["feito"], key=f"check_{i}")
         with col2:
             if st.button("🗑️", key=f"del_check_{i}"):
                 df = df.drop(i)
                 salvar_dados(df)
                 st.experimental_rerun()
-        df.loc[i, "feito"] = done
+        # Atualizar o DataFrame principal 'df'
+        if done != row["feito"]:
+            df.loc[i, "feito"] = done
     salvar_dados(df)
 
 # ---------- LISTA DE COMPRAS ----------
@@ -97,13 +100,16 @@ elif view == "Tarefas":
     for i, row in tarefas.iterrows():
         col1, col2, col3 = st.columns([3, 1, 1])
         with col1:
+            # Acessar por índice para evitar erro de SettingWithCopyWarning
             done = st.checkbox(row["item"], value=row["feito"], key=f"task_{i}")
         with col2:
             if st.button("🗑️", key=f"del_task_{i}"):
                 df = df.drop(i)
                 salvar_dados(df)
                 st.experimental_rerun()
-        df.loc[i, "feito"] = done
+        # Atualizar o DataFrame principal 'df'
+        if done != row["feito"]:
+            df.loc[i, "feito"] = done
     salvar_dados(df)
 
 # ---------- HUMOR ----------
@@ -120,4 +126,3 @@ elif view == "Humor":
 # ---------- FOOTER ----------
 st.markdown("---")
 st.caption("Feito com 💖 por Maria Eduarda Fontoura")
-
