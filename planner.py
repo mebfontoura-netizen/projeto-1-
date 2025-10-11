@@ -9,7 +9,7 @@ st.set_page_config(page_title="Meu Planner Diário", page_icon="📝", layout="c
 # ---------- TÍTULO E IMAGEM DECORATIVA ----------
 st.title("🩷 Meu Planner Diário 🩷")
 st.image(
-    "https://i.imgur.com/YhN6ZzF.png",  # imagem válida e estável
+    "planner_banner.jpg",
     caption="Organize seu dia com estilo e leveza 🌷",
     use_container_width=True,
 )
