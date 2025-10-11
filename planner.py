@@ -47,4 +47,4 @@ st.markdown("---")
 
 # ---------- SIDEBAR ----------
 st.sidebar.title("Navegação")
-view = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Checklist", "Lista de Compras", "Tarefas", "Humor"]()
+view = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Checklist", "Lista de Compras", "Tarefas", "Humor"])
