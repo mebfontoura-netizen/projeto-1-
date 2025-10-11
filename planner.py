@@ -9,8 +9,8 @@ st.set_page_config(page_title="Meu Planner Diário", page_icon="📝", layout="c
 # ---------- TÍTULO E IMAGEM DECORATIVA ----------
 st.title("🩷 Meu Planner Diário 🩷")
 st.image(
-    "https://i.imgur.com/jv3x8mV.png",  # imagem válida e bonita
-    caption="Organize seu dia com estilo e tranquilidade 🌸",
+    "https://i.imgur.com/YhN6ZzF.png",  # imagem válida e estável
+    caption="Organize seu dia com estilo e leveza 🌷",
     use_container_width=True,
 )
 
@@ -23,15 +23,15 @@ if os.path.exists(DATA_FILE):
 else:
     data = pd.DataFrame(columns=["tipo", "texto", "feito", "data"])
 
+# ---------- FUNÇÃO DE SALVAR ----------
+def salvar_dados():
+    data.to_csv(DATA_FILE, index=False)
+
 # ---------- MENU LATERAL ----------
 view = st.sidebar.radio(
     "Escolha uma seção:",
     ["Visão Geral", "Checklist", "Lista de Compras", "Tarefas", "Humor"]
 )
-
-# ---------- FUNÇÃO DE SALVAR ----------
-def salvar_dados():
-    data.to_csv(DATA_FILE, index=False)
 
 # ---------- VISÃO GERAL ----------
 if view == "Visão Geral":
@@ -61,11 +61,24 @@ elif view == "Checklist":
             salvar_dados()
             st.success("Item adicionado!")
 
-    for i, row in data[data["tipo"] == "Checklist"].iterrows():
-        feito = st.checkbox(row["texto"], value=row["feito"], key=f"check_{i}")
-        if feito != row["feito"]:
-            data.at[i, "feito"] = feito
-            salvar_dados()
+    checklist = data[data["tipo"] == "Checklist"]
+    if checklist.empty:
+        st.info("Nenhum item na checklist ainda.")
+    else:
+        for i, row in checklist.iterrows():
+            col1, col2, col3 = st.columns([0.1, 0.7, 0.2])
+            with col1:
+                feito = st.checkbox("", value=row["feito"], key=f"check_{i}")
+            with col2:
+                st.write(row["texto"])
+            with col3:
+                if st.button("🗑️", key=f"del_check_{i}"):
+                    data = data.drop(i)
+                    salvar_dados()
+                    st.rerun()
+            if feito != row["feito"]:
+                data.at[i, "feito"] = feito
+                salvar_dados()
 
 # ---------- LISTA DE COMPRAS ----------
 elif view == "Lista de Compras":
@@ -78,11 +91,24 @@ elif view == "Lista de Compras":
             salvar_dados()
             st.success("Item adicionado à lista!")
 
-    for i, row in data[data["tipo"] == "Compras"].iterrows():
-        feito = st.checkbox(row["texto"], value=row["feito"], key=f"compras_{i}")
-        if feito != row["feito"]:
-            data.at[i, "feito"] = feito
-            salvar_dados()
+    compras = data[data["tipo"] == "Compras"]
+    if compras.empty:
+        st.info("Sua lista de compras está vazia.")
+    else:
+        for i, row in compras.iterrows():
+            col1, col2, col3 = st.columns([0.1, 0.7, 0.2])
+            with col1:
+                feito = st.checkbox("", value=row["feito"], key=f"compras_{i}")
+            with col2:
+                st.write(row["texto"])
+            with col3:
+                if st.button("🗑️", key=f"del_compras_{i}"):
+                    data = data.drop(i)
+                    salvar_dados()
+                    st.rerun()
+            if feito != row["feito"]:
+                data.at[i, "feito"] = feito
+                salvar_dados()
 
 # ---------- TAREFAS ----------
 elif view == "Tarefas":
@@ -95,11 +121,24 @@ elif view == "Tarefas":
             salvar_dados()
             st.success("Tarefa adicionada!")
 
-    for i, row in data[data["tipo"] == "Tarefa"].iterrows():
-        feito = st.checkbox(row["texto"], value=row["feito"], key=f"tarefa_{i}")
-        if feito != row["feito"]:
-            data.at[i, "feito"] = feito
-            salvar_dados()
+    tarefas = data[data["tipo"] == "Tarefa"]
+    if tarefas.empty:
+        st.info("Nenhuma tarefa adicionada ainda.")
+    else:
+        for i, row in tarefas.iterrows():
+            col1, col2, col3 = st.columns([0.1, 0.7, 0.2])
+            with col1:
+                feito = st.checkbox("", value=row["feito"], key=f"tarefa_{i}")
+            with col2:
+                st.write(row["texto"])
+            with col3:
+                if st.button("🗑️", key=f"del_tarefa_{i}"):
+                    data = data.drop(i)
+                    salvar_dados()
+                    st.rerun()
+            if feito != row["feito"]:
+                data.at[i, "feito"] = feito
+                salvar_dados()
 
 # ---------- HUMOR ----------
 elif view == "Humor":
@@ -118,5 +157,5 @@ elif view == "Humor":
 
 # ---------- RODAPÉ ----------
 st.sidebar.markdown("---")
-st.sidebar.info("Desenvolvido com 💖 em Streamlit por Maria Eduarda Fontoura")
+st.sidebar.info("Desenvolvido com 💖 por Maria Eduarda Fontoura")
 
